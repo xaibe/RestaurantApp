@@ -8,6 +8,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+  
   @Public()
   @Post('login')
   async Login(@Body() createAuthDto: LoginUserDto) {
@@ -41,12 +42,12 @@ export class AuthController {
   //   return await this.authService.verifyEmail(email, hash);
   // }
 
-  // @Public()
-  // @Patch('update-Password')
-  // async updatePassword(@Body() UpdatePasswordDto: UpdatePasswordDto) {
-  //   const { email, Password } = UpdatePasswordDto;
-  //   return await this.authService.updatePassword(email, Password);
-  // }
+  @Public()
+  @Patch('update-Password')
+  async updatePassword(@Body() UpdatePasswordDto: UpdatePasswordDto) {
+    const { email, Password } = UpdatePasswordDto;
+    return await this.authService.updatePassword(email, Password);
+  }
 
   // @Public()
   // @Post('forget-Password')

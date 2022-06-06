@@ -1,3 +1,4 @@
+import { EmailValidationsService } from './../email-validations/email-validations.service';
 import { PasswordsService } from 'src/passwords/passwords.service';
 /* eslint-disable prefer-const */
 import {
@@ -16,6 +17,7 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private readonly usersService: UsersService,
     private readonly passwordsService: PasswordsService,
+    private readonly  emailValidationService: EmailValidationsService,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -24,7 +26,7 @@ export class AuthService {
       const newUser = this.loginUser(user);
       return newUser;
     } else {
-      throw new UnauthorizedException('Inavalid User Name or password');
+      throw new UnauthorizedException('Invalid User Name or password');
     }
   }
 
@@ -49,4 +51,47 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+
+
+  async forgetPassword(email: string) {
+    const user = await this.usersService.getByEmail(email);
+    return await this.passwordsService.forgetPassword(user);
+  }
+
+  async updatePassword(email: string, password: string) {
+    const user = await this.usersService.getByEmail(email);
+    const verify = await this.emailValidationService.verify(user.id);
+    if (verify) {
+      const update = await this.passwordsService.updatePassword(
+        email,
+        password,
+      );
+      if (update) {
+        await this.emailValidationService.delete(verify.id);
+        return update;
+      }
+    }
+  }
+
+  async verifyForgetPasswordEmail(email: string, hash: string) {
+    try {
+      const user = await this.usersService.getByEmail(email);
+      const verify = await this.prismaService.emailValidation.findFirst({
+        where: { userId: user.id, hash: hash },
+      });
+      if (verify) {
+        const updateValidation = await this.emailValidationService.activate(
+          verify.id,
+        );
+        if (updateValidation) {
+          return { message: 'validation successful' };
+        }
+      } else {
+        throw new BadRequestException('Unable to find User with this hash');
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
+
 }
