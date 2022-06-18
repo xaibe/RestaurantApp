@@ -4,6 +4,9 @@ import { AuthService } from './auth.service';
 import { Public } from './constants';
 import { LoginUserDto } from './dto/login-user.dto';
 
+import { ForgetPasswordDto } from 'src/passwords/dto/forget-password.dto';
+import { UpdatePasswordDto } from 'src/passwords/dto/update-password.dto';
+
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {

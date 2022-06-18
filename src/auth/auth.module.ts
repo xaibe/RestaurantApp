@@ -1,3 +1,5 @@
+import { EmailsService } from './../emails/emails.service';
+import { EmailValidationsService } from 'src/email-validations/email-validations.service';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -28,6 +30,8 @@ import { LocalStrategy } from './Strategies/local.strategy';
     AuthService,
     UsersService,
     PrismaService,
+    EmailValidationsService,
+    EmailsService,
     PasswordsService,
   ],
   exports: [AuthService],

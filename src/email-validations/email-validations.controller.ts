@@ -17,7 +17,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateEmailValidationDto } from './dto/create-email-validation.dto';
-import { EmailValidationResponse } from './email-validation.response';
 import { EmailValidationsService } from './email-validations.service';
 
 @Controller({
@@ -30,28 +29,23 @@ export class EmailValidationsController {
   constructor(private readonly evService: EmailValidationsService) {}
 
   @Get(':id')
-  async getById(@Param('id') id: string): Promise<EmailValidationResponse> {
+  async getById(@Param('id') id: string) {
     return this.evService.getById({ id });
   }
 
   @Get()
-  @ApiOkResponse({
-    type: EmailValidationResponse,
-    isArray: true,
-  })
-  async getAll(): Promise<EmailValidationResponse[]> {
+  async getAll() {
     return await this.evService.getAll();
   }
 
   @Post('')
   @ApiCreatedResponse({
     description: 'Email validation created successfully',
-    type: EmailValidationResponse,
     status: HttpStatus.CREATED,
   })
   async create(
     @Body() data: CreateEmailValidationDto,
-  ): Promise<EmailValidationResponse> {
+  ) {
     return await this.evService.create(data);
   }
 

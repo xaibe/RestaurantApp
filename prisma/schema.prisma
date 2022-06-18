@@ -23,8 +23,9 @@ model User {
   roles            Role
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
+  //relations
   emailValidations EmailValidation[] @relation("UserEmailValidations")
-  restaurants Restaurant[] @relation("UserRestaurant")
+  restaurants      Restaurant[]      @relation("UserRestaurant")
 }
 
 model EmailValidation {
@@ -33,8 +34,188 @@ model EmailValidation {
   active    Boolean  @default(false)
   hash      String?
   createdAt DateTime @default(now())
+  //relations
   user      User?    @relation("UserEmailValidations", fields: [userId], references: [id])
-  userId    String?
+  userId    String?  @db.ObjectId
+}
+
+model Restaurant {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdBy String
+  updateBy  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  //relations
+  user       User?        @relation("UserRestaurant", fields: [userId], references: [id])
+  userId     String?      @db.ObjectId
+  orderings  Ordering[]   @relation("RestaurantOrdering")
+  order      Order[]      @relation("RestaurantOrder")
+  setting    Setting[]    @relation("RestaurantSetting")
+  location   Location[]   @relation("RestaurantLocation")
+  contact    Contact[]    @relation("RestaurantContact")
+  seoSetting SeoSetting[] @relation("RestaurantSeoSetting")
+}
+
+model Payment {
+  id                      String          @id @default(auto()) @map("_id") @db.ObjectId
+  ownerEmail              String
+  statementType           StatementStatus
+  payoutFrequency         String
+  feeFlatAmount           Int
+  feePercentageAmount     Int
+  trialEndDate            DateTime
+  processingFeePercentage Int
+  orderReceiveType        String
+  createdBy               String
+  updateBy                String
+  //relations
+  order                   Order?          @relation("OrderPayment", fields: [orderId], references: [id])
+  orderId                 String?         @db.ObjectId
+}
+
+model Order {
+  id                  String      @id @default(auto()) @map("_id") @db.ObjectId
+  customerName        String
+  customerPhoneNumber String
+  Status              OrderStatus
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  //relations
+  payments     Payment[]   @relation("OrderPayment")
+  restaurant   Restaurant? @relation("RestaurantOrder", fields: [restaurantId], references: [id])
+  restaurantId String?     @db.ObjectId
+
+
+  // shipping
+}
+
+model Ordering {
+  id                       String   @id @default(auto()) @map("_id") @db.ObjectId
+  minimumPickUpOrder       Int
+  minimumDelivery          Int
+  pickUpEstimate           String
+  deliveryEstimate         String
+  onlineDiscountPercentage Int
+  isDeliveryPaused         Boolean
+  isNoScheduledOrders      Boolean
+  stopOrdersForToday       Boolean
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  //relations
+  restaurant   Restaurant? @relation("RestaurantOrdering", fields: [restaurantId], references: [id])
+  restaurantId String?     @db.ObjectId
+
+}
+
+model Setting {
+  id               String           @id @default(auto()) @map("_id") @db.ObjectId
+  Name             String
+  IsOpen           Boolean
+  showOnFront      String
+  status           RestaurantStatus
+  PaymentType      PaymentType
+  shopLink         String
+  Chain            String
+  Description      String
+  agreementSigned  DateTime
+  logoImgLink      String
+  lpImgMobileLink  String
+  lpImgDesktopLink String
+  bannerText       String
+  accountManagerId String
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  //relations
+  restaurant       Restaurant?      @relation("RestaurantSetting", fields: [restaurantId], references: [id])
+  restaurantId     String?          @db.ObjectId
+}
+
+enum StatementStatus {
+  Paid    @map("paid")
+  Unpaid  @map("unpaid")
+
+  @@map("StatementStatus")
+}
+
+model Location {
+  id                  String      @id @default(auto()) @map("_id") @db.ObjectId
+  RestaurantAddress   String
+  RestaurantCity      String
+  RestaurantState     String
+  RestaurantZipCode   String
+  RestaurantLatitude  Int
+  RestaurantLongitude Int
+  RestaurantTimeZone  String
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  //relations
+  restaurant          Restaurant? @relation("RestaurantLocation", fields: [restaurantId], references: [id])
+  restaurantId        String?     @db.ObjectId
+}
+
+model Contact {
+  id                    String      @id @default(auto()) @map("_id") @db.ObjectId
+  OwnerName             String
+  OwnerEmail            String
+  OwnerPhone            String
+  SecondaryContactName  String
+  SecondaryContactEmail String
+  SecondaryContactPhone String
+  RestaurantPhone       String
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  //relations
+  restaurant            Restaurant? @relation("RestaurantContact", fields: [restaurantId], references: [id])
+  restaurantId          String?     @db.ObjectId
+}
+
+model SeoSetting {
+  id               String      @id @default(auto()) @map("_id") @db.ObjectId
+  GMBDomain        String
+  ownWebsiteLink   String
+  IsDomainLocked   Boolean
+  PriceRange       String
+  GMBStatus        GMBStatus
+  GMBRole          GMBRole
+  GMBEmail         String
+  GMBPassword      String
+  GMBOwner         GMBOwner
+  AppleMapEmail    String
+  AppleMapPassword String
+  AppleMapOwner    String
+  AppleMapStatus   String
+  //relations
+  restaurant       Restaurant? @relation("RestaurantSeoSetting", fields: [restaurantId], references: [id])
+  restaurantId     String?     @db.ObjectId
+}
+
+enum GMBStatus {
+  verified     @map("verified")
+  NotVerified  @map("notVerified")
+  Suspended    @map("suspended")
+
+  @@map("GMBStatus")
+}
+
+enum GMBOwner {
+  Competitor  @map("competitor")
+  Manager     @map("manager")
+
+  @@map("GMBOwner")
+}
+
+enum GMBRole {
+  PrimaryOwner  @map("primaryOwner")
+  Manager       @map("manager")
+  Owner         @map("owner")
+  verified      @map("verified")
+  NotVerified   @map("notVerified")
+  Suspended     @map("suspended")
+
+  @@map("GMBRole")
 }
 
 enum Role {
@@ -48,143 +229,25 @@ enum Role {
 }
 
 enum PaymentType {
-  directDeposit       @map("directDeposit")
+  directDeposit  @map("directDeposit")
 
   @@map("paymentType")
 }
 
 enum RestaurantStatus {
-  Admin       @map("live")
-  Sales       @map("Temporarily Paused")
-  Menu        @map("M2M")
-  Support     @map("Disabled")
-  Accounting  @map("accounting")
+  Live               @map("live")
+  TemporarilyPaused  @map("Temporarily Paused")
+  M2M                @map("M2M")
+  Disabled           @map("Disabled")
 
-  @@map("Restaurant")
-}
-
-
-model Restaurant {
-  id               String            @id @default(auto()) @map("_id") @db.ObjectId
-  Name         String            @unique
-  logo     String            //photo
-  webHeader         String  //photo
-  mobileHeader  String //photo
-  Status            Role 
-  PaymentType PaymentType
-  
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  user      User?    @relation("UserRestaurant", fields: [userId], references: [id])
-  userId    String?
-  orderings Ordering[] @relation("RestaurantOrdering")
-}
-
-model Order{
-  id      String            @id @default(auto()) @map("_id") @db.ObjectId
-  customerName String
-  customerPhoneNumber String
-Status OrderStatus
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-
-//relations
-// payment 
-// shipping 
-// Restaurant
+  @@map("RestaurantStatus")
 }
 
 enum OrderStatus {
-  Successfull       @map("successfull")
-  Rejected       @map("rejected")
-  Flagged        @map("flagged")
+  Successfull  @map("successfull")
+  Rejected     @map("rejected")
+  Flagged      @map("flagged")
   Adjusted     @map("adjusted")
 
   @@map("OrderStatus")
-}
-
-model Ordering{
-id      String            @id @default(auto()) @map("_id") @db.ObjectId
-minimumPickUpOrder  Int
-minimumDelivery Int
-pickUpEstimate Int
-deliveryEstimate Int
-onlineDiscount Int
-pauseDeliveryForToday Boolean
-noScheduledOrders Boolean
-stopOrdersForToday Boolean
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-
-restaurant      Restaurant?    @relation("RestaurantOrdering", fields: [restaurantId], references: [id])
-restaurantId    String?
-
-}
-
-model Statement{
-  id String            @id @default(auto()) @map("_id") @db.ObjectId
-  Status StatementStatus
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-
-}
-
-enum StatementStatus {
-  Paid       @map("paid")
-  Unpaid       @map("unpaid")
-  
-  @@map("StatementStatus")
-}
-
-model Contact{
-  id String            @id @default(auto()) @map("_id") @db.ObjectId
-  OwnerName String
-  OwnerEmail String
-  OwnerPhone String
-  SecondaryContactName String
-  SecondaryContactEmail String
-  SecondaryContactPhone String
-  RestaurantPhone String
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-
-}
-
-enum GMBStatus {
-  verified       @map("verified")
-NotVerified       @map("notVerified")
-  Suspended       @map("suspended")
-  
-  @@map("GMBStatus")
-}
-
-enum GMBOwner {
-  Competitor       @map("competitor")
-  Manager       @map("manager")
-  
-  @@map("GMBOwner")
-}
-
-enum GMBRole {
-  PrimaryOwner       @map("primaryOwner")
-  Manager   @map("manager")
-  Owner       @map("owner")
-  verified       @map("verified")
-NotVerified       @map("notVerified")
-  Suspended       @map("suspended")
-  
-  @@map("GMBRole")
-}
-
-model SeoSetting{
-id String            @id @default(auto()) @map("_id") @db.ObjectId
-GMBDomain String 
-ownWebsite String
-GMBStatus GMBStatus  
-GMBRole GMBRole  
-MNDomain String 
-GMBEmail String 
-Password String 
-GMBOwner  GMBOwner
-
 }
