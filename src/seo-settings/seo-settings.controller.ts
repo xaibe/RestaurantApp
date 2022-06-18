@@ -2,7 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { SeoSettingsService } from './seo-settings.service';
 import { CreateSeoSettingDto } from './dto/create-seo-setting.dto';
 import { UpdateSeoSettingDto } from './dto/update-seo-setting.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiTags('SEOSettings')
 @Controller('seo-settings')
 export class SeoSettingsController {
   constructor(private readonly seoSettingsService: SeoSettingsService) {}

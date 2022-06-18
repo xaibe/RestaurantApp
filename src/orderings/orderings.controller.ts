@@ -2,6 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { OrderingsService } from './orderings.service';
 import { CreateOrderingDto } from './dto/create-ordering.dto';
 import { UpdateOrderingDto } from './dto/update-ordering.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+
+@ApiBearerAuth()
+@ApiTags('orderings')
 
 @Controller('orderings')
 export class OrderingsController {
