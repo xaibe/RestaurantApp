@@ -1,11 +1,23 @@
+import { UsersService } from 'src/users/users.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 
 @Injectable()
 export class RestaurantsService {
-  create(createRestaurantDto: CreateRestaurantDto) {
-    return 'This action adds a new restaurant';
+  constructor(private prisma:PrismaService,private usersService:UsersService){}
+ 
+  async create(id:any) {
+    const user= await this.usersService.getById(id);
+      const result = await this.prisma.restaurant.create({
+      data: {
+        createdBy: user.userName,
+        userId: user.id,
+      },
+    });
+console.log("result",result);
+
+    return result;
   }
 
   findAll() {

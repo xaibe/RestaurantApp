@@ -37,9 +37,10 @@ export class UsersService {
     }
   }
 
-  async getById(input: Prisma.UserWhereUniqueInput): Promise<User> {
+  async getById(id): Promise<User> {
+   console.log("id in get user by id",id);
     const user = await this.prisma.user.findUnique({
-      where: input,
+      where: {id:id},
     });
     if (!user) {
       throw new NotFoundException();

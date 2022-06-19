@@ -1,6 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post,Request, Body, Patch, Param, Delete } from '@nestjs/common';
 import { RestaurantsService } from './restaurants.service';
-import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -11,8 +10,10 @@ export class RestaurantsController {
   constructor(private readonly restaurantsService: RestaurantsService) {}
 
   @Post()
-  create(@Body() createRestaurantDto: CreateRestaurantDto) {
-    return this.restaurantsService.create(createRestaurantDto);
+  create( @Request() req) {
+    console.log('request', req.user.id);
+
+    return this.restaurantsService.create(req.user.id);
   }
 
   @Get()
@@ -34,4 +35,5 @@ export class RestaurantsController {
   remove(@Param('id') id: string) {
     return this.restaurantsService.remove(+id);
   }
+
 }
