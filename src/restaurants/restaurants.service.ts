@@ -1,7 +1,7 @@
+import { Restaurant } from './entities/restaurant.entity';
 import { UsersService } from 'src/users/users.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
-import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class RestaurantsService {
@@ -20,19 +20,48 @@ console.log("result",result);
     return result;
   }
 
-  findAll() {
-    return `This action returns all restaurants`;
+    
+    async findAll(): Promise<Restaurant[]> {
+      return await this.prisma.restaurant.findMany({
+        include: { 
+        ordering : true, 
+        order  : true,   
+        setting : true,  
+        location : true,  
+        contact  : true,  
+        seoSetting : true,
+                 },
+      });
+    }
+
+
+ async findOne(id) {
+    console.log("id in get restaurant by id",id);
+    const restaurant = await this.prisma.restaurant.findUnique({
+      where: {id:id},
+      include: { 
+        ordering : true, 
+        order  : true,   
+        setting : true,  
+        location : true,  
+        contact  : true,  
+        seoSetting : true,
+                 },
+    });
+    if (!restaurant) {
+      throw new NotFoundException("Restaurant with this userId is not found");
+    } else {
+      return restaurant;
+    }
+
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} restaurant`;
+
+  async remove(id){
+    const restaurant = await this.prisma.restaurant.delete({
+      where: { id: id },
+    });
+    return restaurant;
   }
 
-  update(id: number, updateRestaurantDto: UpdateRestaurantDto) {
-    return `This action updates a #${id} restaurant`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} restaurant`;
-  }
 }
