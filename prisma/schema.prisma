@@ -225,7 +225,7 @@ enum Role {
 }
 
 enum PaymentType {
-  directDeposit  @map("directDeposit")
+  DirectDeposit  @map("directDeposit")
 
   @@map("paymentType")
 }
