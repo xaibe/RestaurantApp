@@ -11,9 +11,9 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class LocationsController {
   constructor(private readonly locationsService: LocationsService) {}
 
-  @Post()
-  create(@Body() createLocationDto: CreateLocationDto) {
-    return this.locationsService.create(createLocationDto);
+  @Post(':restaurantId')
+  async create(@Param('restaurantId') restaurantId: string, @Body() createLocationDto: CreateLocationDto) {
+    return await this.locationsService.create(createLocationDto,restaurantId);
   }
 
   @Get()
@@ -23,16 +23,16 @@ export class LocationsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.locationsService.findOne(+id);
+    return this.locationsService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateLocationDto: UpdateLocationDto) {
-    return this.locationsService.update(+id, updateLocationDto);
+    return this.locationsService.update(id, updateLocationDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.locationsService.remove(+id);
+    return this.locationsService.remove(id);
   }
 }
