@@ -10,28 +10,29 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class SeoSettingsController {
   constructor(private readonly seoSettingsService: SeoSettingsService) {}
 
-  @Post()
-  create(@Body() createSeoSettingDto: CreateSeoSettingDto) {
-    return this.seoSettingsService.create(createSeoSettingDto);
+  @Post(':restaurantId')
+async create(@Param('restaurantId') restaurantId: string,
+    @Body() createSeoSettingDto: CreateSeoSettingDto) {
+    return await this.seoSettingsService.create(createSeoSettingDto,restaurantId);
   }
 
   @Get()
-  findAll() {
-    return this.seoSettingsService.findAll();
+ async findAll() {
+    return await this.seoSettingsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.seoSettingsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.seoSettingsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSeoSettingDto: UpdateSeoSettingDto) {
-    return this.seoSettingsService.update(+id, updateSeoSettingDto);
+  async update(@Param('id') id: string, @Body() updateSeoSettingDto: UpdateSeoSettingDto) {
+    return await this.seoSettingsService.update(id, updateSeoSettingDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.seoSettingsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.seoSettingsService.remove(id);
   }
 }

@@ -25,9 +25,9 @@ export class SettingsController {
     return this.settingsService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSettingDto: UpdateSettingDto) {
-    return this.settingsService.update(id, updateSettingDto);
+  @Patch(':restaurantId')
+  update(@Param('restaurantId') restaurantId: string, @Body() updateSettingDto: UpdateSettingDto) {
+    return this.settingsService.update(restaurantId, updateSettingDto);
   }
 
   @Delete(':id')
