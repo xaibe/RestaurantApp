@@ -1,5 +1,5 @@
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -23,22 +23,57 @@ export class OrdersService {
       console.log("result", result);
 
       return result;
+  }
+
+  async findAll() {
+    return await this.prisma.order.findMany({
+      include: { 
+      restaurant : true,},
+    });
+  }
+
+ 
+
+async findOne(id) {
+  console.log("id in get orders by id",id);
+  const order = await this.prisma.order.findUnique({
+    where: {id:id},
+    include: { 
+      restaurant : true,
+               },
+  });
+  if (!order) {
+    throw new NotFoundException("order with this id is not found");
+  } else {
+    return order;
+  }
+
+}
+
+
+async remove(id){
+console.log("id in remove order",id);
+
+  const order = await this.prisma.order.delete({
+    where: { id: id },
+  });
+  return order;
+}
+
+
+  async update(id, order: UpdateOrderDto) {
+  const result = await this.prisma.order.update({
+      where:{id : id},
+      data: {
+        customerName       : order.customerName,
+        customerPhoneNumber :order.customerPhoneNumber,
+        Status            :  order.Status,
+   
+    },
+  });
+    console.log("result",result);
     
+    return result;
   }
-
-  findAll() {
-    return `This action returns all orders`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
-  }
-
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} order`;
-  }
+  
 }
