@@ -26,9 +26,9 @@ export class LocationsController {
     return this.locationsService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLocationDto: UpdateLocationDto) {
-    return this.locationsService.update(id, updateLocationDto);
+  @Patch(':restaurantId')
+  update(@Param('restaurantId') restaurantId: string, @Body() updateLocationDto: UpdateLocationDto) {
+    return this.locationsService.update(restaurantId, updateLocationDto);
   }
 
   @Delete(':id')

@@ -1,11 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { RestaurantsService } from 'src/restaurants/restaurants.service';
 
 @Injectable()
 export class OrdersService {
-  create(createOrderDto: CreateOrderDto) {
-    return 'This action adds a new order';
+  constructor(private prisma: PrismaService,
+    private restaurantsService:RestaurantsService) { }
+  
+  async create(order: CreateOrderDto, restaurantId) {
+    
+      const result = await this.prisma.order.create({
+        data: {
+          customerName       : order.customerName,
+          customerPhoneNumber :order.customerPhoneNumber,
+          Status            :  order.Status,
+          restaurantId: restaurantId,
+        },
+      });
+      console.log("result", result);
+
+      return result;
+    
   }
 
   findAll() {

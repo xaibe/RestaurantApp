@@ -3,6 +3,7 @@ import { OrderingsService } from './orderings.service';
 import { CreateOrderingDto } from './dto/create-ordering.dto';
 import { UpdateOrderingDto } from './dto/update-ordering.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 
 @ApiBearerAuth()
 @ApiTags('orderings')
@@ -11,9 +12,10 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class OrderingsController {
   constructor(private readonly orderingsService: OrderingsService) {}
 
-  @Post()
-  create(@Body() createOrderingDto: CreateOrderingDto) {
-    return this.orderingsService.create(createOrderingDto);
+  @Post(':restaurantId')
+ async create(@Param('restaurantId') restaurantId: string,
+    @Body() createOrderingDto: CreateOrderingDto) {
+    return await this.orderingsService.create(createOrderingDto,restaurantId);
   }
 
   @Get()
@@ -23,16 +25,17 @@ export class OrderingsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.orderingsService.findOne(+id);
+    return this.orderingsService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderingDto: UpdateOrderingDto) {
-    return this.orderingsService.update(+id, updateOrderingDto);
+  @Patch(':restaurantId')
+  update(@Param('restaurantId') restaurantId: string,
+    @Body() updateOrderingDto: UpdateOrderingDto) {
+    return this.orderingsService.update(restaurantId, updateOrderingDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.orderingsService.remove(+id);
+    return this.orderingsService.remove(id);
   }
 }
