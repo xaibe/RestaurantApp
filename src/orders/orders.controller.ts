@@ -22,6 +22,11 @@ export class OrdersController {
     return this.ordersService.findAll();
   }
 
+  @Get('latest')
+  findLatest() {
+    return this.ordersService.findLatest();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.ordersService.findOne(id);

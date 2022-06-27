@@ -9,9 +9,11 @@ export class RestaurantsService {
  
   async create(id:any) {
     const user= await this.usersService.getById(id);
-      const result = await this.prisma.restaurant.create({
+    const newUniqueID=this.generateRandomString(5);
+    const result = await this.prisma.restaurant.create({
       data: {
-        createdBy: user.userName,
+          createdBy: user.userName,
+          rest_id: newUniqueID,
         userId: user.id,
       },
     });
@@ -20,7 +22,20 @@ console.log("result",result);
     return result;
   }
 
-    
+  generateRandomString(length) {
+    const randomChars =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += randomChars.charAt(
+        Math.floor(Math.random() * randomChars.length),
+      );
+    }
+    return result;
+  }
+
+   
+
     async findAll(): Promise<Restaurant[]> {
       return await this.prisma.restaurant.findMany({
         include: { 

@@ -14,9 +14,10 @@ import { SettingsModule } from './settings/settings.module';
 import { LocationsModule } from './locations/locations.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { SeoSettingsModule } from './seo-settings/seo-settings.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, PrismaModule, RestaurantsModule, OrderingsModule, OrdersModule, SettingsModule, LocationsModule, ContactsModule, SeoSettingsModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, PrismaModule, RestaurantsModule, OrderingsModule, OrdersModule, SettingsModule, LocationsModule, ContactsModule, SeoSettingsModule, PaymentsModule],
   controllers: [AppController],
   providers: [
     AppService,

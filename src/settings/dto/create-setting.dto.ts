@@ -13,10 +13,10 @@ export class CreateSettingDto {
     @ApiProperty()
     IsOpen : boolean;
   
-    @IsString()
+    
     @IsNotEmpty()
     @ApiProperty()
-    showOnFront : string;
+    showOnFront : boolean;
     
     @ApiProperty()
     @IsEnum(RestaurantStatus)

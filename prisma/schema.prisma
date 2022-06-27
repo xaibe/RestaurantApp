@@ -37,6 +37,7 @@ model EmailValidation {
 
 model Restaurant {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  rest_id   String   @unique
   createdBy String
   updatedBy String?
   createdAt DateTime @default(now())
@@ -63,8 +64,8 @@ model Payment {
   trialEndDate            DateTime
   processingFeePercentage Int
   orderReceiveType        String
-  createdBy               String
-  updateBy                String
+  createdBy               String?
+  updateBy                String?
   //relations
   order                   Order?          @relation("OrderPayment", fields: [orderId], references: [id])
   orderId                 String?         @db.ObjectId
@@ -110,7 +111,7 @@ model Setting {
   id               String           @id @default(auto()) @map("_id") @db.ObjectId
   Name             String
   IsOpen           Boolean
-  showOnFront      String
+  showOnFront      Boolean
   status           RestaurantStatus
   PaymentType      PaymentType
   shopLink         String
@@ -142,8 +143,8 @@ model Location {
   RestaurantCity      String
   RestaurantState     String
   RestaurantZipCode   String
-  RestaurantLatitude  Int
-  RestaurantLongitude Int
+  RestaurantLatitude  Float
+  RestaurantLongitude Float
   RestaurantTimeZone  String
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt

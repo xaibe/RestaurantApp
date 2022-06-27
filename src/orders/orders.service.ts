@@ -1,5 +1,5 @@
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -28,10 +28,28 @@ export class OrdersService {
   async findAll() {
     return await this.prisma.order.findMany({
       include: { 
-      restaurant : true,},
+        restaurant: true,
+        payments:true},
     });
   }
+  
+  async findLatest() {
+    const orders = await this.prisma.order.findMany({    
+      orderBy: {
+        id: 'desc',
+      },
+      take: 1,
+    });
 
+    if (orders) {
+      console.log('orders',orders);
+      
+      return orders;
+    }
+    else {
+      throw new BadRequestException('can not find any order');
+    }
+  }
  
 
 async findOne(id) {
@@ -39,7 +57,8 @@ async findOne(id) {
   const order = await this.prisma.order.findUnique({
     where: {id:id},
     include: { 
-      restaurant : true,
+      restaurant: true,
+      payments:true,
                },
   });
   if (!order) {

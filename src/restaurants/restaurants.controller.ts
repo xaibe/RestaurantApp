@@ -1,6 +1,7 @@
 import { Controller, Get, Post,Request, Body, Patch, Param, Delete } from '@nestjs/common';
 import { RestaurantsService } from './restaurants.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/auth/constants';
 
 @ApiBearerAuth()
 @ApiTags('Restaurants')
@@ -19,6 +20,8 @@ export class RestaurantsController {
   findAll() {
     return this.restaurantsService.findAll();
   }
+
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {
